@@ -1,6 +1,8 @@
 import Mail from 'nodemailer/lib/mailer';
 import * as nodemailer from 'nodemailer';
 import { Inject, Injectable } from '@nestjs/common';
+import emailConfig from 'src/config/email.config';
+import { ConfigType } from '@nestjs/config';
 
 interface EmailOptions {
   to: string;
@@ -12,13 +14,14 @@ interface EmailOptions {
 export class EmailService {
   private transporter: Mail;
 
-  constructor(@Inject('NODE_ENV') private readonly nodeEnv: string) {
-    console.log("### NODE_ENV >> ", nodeEnv);
+  constructor(@Inject('NODE_ENV') private readonly nodeEnv: string,
+              @Inject(emailConfig.KEY) private config: ConfigType<typeof emailConfig>) {
+    console.log("### NODE_ENV >> ", nodeEnv, process.env.GOOGLE_EMAIL, config);
     this.transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: config.service,
       auth: {
-        user: process.env.GOOGLE_EMAIL,
-        pass: process .env.GOOGLE_PASS
+        user: config.auth.user,
+        pass: config.auth.pass
       }
     })
   }

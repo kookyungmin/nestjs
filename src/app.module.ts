@@ -5,7 +5,7 @@ import { TestUsersModule } from './test/users/users.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { EmailService } from './email/email.service';
-import { ConfigModule } from './config.module';
+import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [ TestUsersModule, ConfigModule, UsersModule ],
