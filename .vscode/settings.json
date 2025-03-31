@@ -1,3 +1,23 @@
 {
-  "editor.fontSize": 14,
+  // ✨ 변수명, 메서드 추천은 유지
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+
+  // ⌨️ '.' 누를 때 자동 추천은 허용
+  "editor.suggestOnTriggerCharacters": true,
+
+  // 🧠 Ghost Text 자동입력 (AI 인라인 제안) 끄기
+  "editor.inlineSuggest.enabled": false,
+
+  // 💡 함수 파라미터 힌트는 유지
+  "editor.parameterHints.enabled": true,
+
+  // 🔎 현재 문서 기준 단어 추천은 유지
+  "editor.suggest.showWords": true,
+
+  // 🧠 Cursor AI 자동완성 완전히 끄기
+  "cursor.experimental.autocomplete.enabled": false
 }

@@ -1,52 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, BadRequestException, Header, Redirect } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { UserLoginDto } from './dto/user-login.dto';
+import { UsersService } from './users.service';
+import { UserInfo } from './user-info';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async createUser(@Body() dto: CreateUserDto): Promise<void> {
+    const { name, email, password } = dto;
+    await this.usersService.createUser(name, email, password);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Post('/email-verify')
+  async verfiyEmail(@Query() dto: VerifyEmailDto): Promise<string> {
+    const { signupVerifyToken } = dto;
+    return await this.usersService.verifyEmail(signupVerifyToken);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (+id < 1) {
-      throw new BadRequestException('id 는 0보다 큰 값이어야 합니다.')
-    }
-    return this.usersService.findOne(+id);
+  @Post('/login')
+  async login(@Body() dto: UserLoginDto): Promise<string> {
+    const { email, password } = dto;
+
+    return await this.usersService.login(email, password);
   }
 
-  @Header('Custom', 'Test Header')
-  @Get(':id')
-  findOneWithHeader(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Get('redirect/happykoo')
-  @Redirect('https://happykoo.net', 302)
-  redirect() {
-    return {
-      url: 'https://happykoo.net'
-    };
-  }
-
-  @HttpCode(202)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Get('/:id')
+  async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
+    return await this.usersService.getUserInfo(userId);
   }
 }

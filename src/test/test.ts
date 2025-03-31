@@ -1,5 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
-import { IsEmail, MaxLength, IsString, Matches, validate, Validate } from "class-validator";
+import { IsEmail, MaxLength, IsString, Matches, validate } from "class-validator";
 
 class UserDto {
   constructor(email: string, password: string) {
@@ -24,86 +23,26 @@ validate(userDto).then((errors) => {
   console.log(errors[0]);
 });
 
-function firstDeco(message: string) {
-  console.log("first evaluated!");
+function first(message: string) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    console.log("first call: ", message);
+    console.log("first: ", message);
   };
 }
 
-function secondDeco(message: string) {
-  console.log("second evaluate!");
+function second(message: string) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    console.log("second call: ", message);
+    console.log("second: ", message);
+    return descriptor;
   }
 }
 
-class MethodDecoTestClass {
-  @firstDeco('Hello')
-  @secondDeco('Hello2')
+class TestClass {
+  @first('Hello')
+  @second('Hello2')
   test() {
     console.log("test 메서드 호출");
   }
 }
 
-const t = new MethodDecoTestClass();
+const t = new TestClass();
 t.test();
-
-function reportableClassDeco<T extends { new (...args: any[]): {} }> (constructor: T) {
-  return class extends constructor {
-    reportingURL = "http://happykoo.net";
-  }
-}
-
-
-@reportableClassDeco
-class ClassDecoTestClass {
-  type = "report";
-  title: string;
-
-  constructor(title: string) {
-    this.title = title;
-  }
-}
-
-const t2 = new ClassDecoTestClass("happy");
-console.log(t2);
-
-function CustomMinLength(min: number) {
-  return function (target: any, propertyKey: string, parameterIndex: number) {
-    target.validators = {
-      ...target.validators,
-      minLength(args: string[]) {
-        return args[parameterIndex].length >= min;
-      }
-    }
-  }
-}
-
-
-function CustomValidate(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-  const method = descriptor.value;
-
-  descriptor.value = function(...args) {
-    Object.keys(target.validators).forEach(key => {
-      if (!target.validators[key] (args)) {
-        throw new BadRequestException();
-      }
-    })
-    method.apply(this, args);
-  }
-}
-
-class ParamDecoTestClass {
-  private name: string;
-
-  @CustomValidate
-  setName(@CustomMinLength(3) name: string) {
-    this.name = name;
-  }
-}
-
-
-const t3 = new ParamDecoTestClass();
-// t3.setName('de');
-t3.setName('DeHE');
