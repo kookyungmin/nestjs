@@ -32,7 +32,6 @@ function first(message: string) {
 function second(message: string) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     console.log("second: ", message);
-    return descriptor;
   }
 }
 

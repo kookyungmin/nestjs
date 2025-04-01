@@ -16,7 +16,7 @@ export class EmailService {
 
   constructor(@Inject('NODE_ENV') private readonly nodeEnv: string,
               @Inject(emailConfig.KEY) private config: ConfigType<typeof emailConfig>) {
-    console.log("### NODE_ENV >> ", nodeEnv, process.env.GOOGLE_EMAIL, config);
+    console.log("### NODE_ENV >> ", nodeEnv, config);
     this.transporter = nodemailer.createTransport({
       service: config.service,
       auth: {

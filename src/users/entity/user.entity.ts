@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
+import * as crypto from 'crypto'
 
 @Entity('nest_users')
 export class UserEntity {
@@ -11,9 +12,19 @@ export class UserEntity {
     @Column({ length: 60 })
     email: string;
 
-    @Column({ length: 30 })
+    @Column({ length: 512 })
     password: string;
 
     @Column({ length: 60 })
     signupVerifyToken: string;
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    hashPassword() {
+        if (this.password) {
+            this.password = crypto.createHash('sha512')
+            .update(this.password)
+            .digest('hex');
+        }
+    }
 }
