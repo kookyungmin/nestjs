@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
 import { EmailService } from "src/email/email.service";
 import * as uuid from "uuid";
 import { UserInfo } from "./user-info";
@@ -6,10 +6,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./entity/user.entity";
 import { DataSource, Repository } from "typeorm";
 import { ulid } from "ulid";
+import { AuthService } from "src/auth/auth.service";
+import { getSha512Hash } from "src/crypto/crypto.util";
 
 @Injectable()
 export class UsersService {
   constructor(private emailService: EmailService,
+    private authService: AuthService,
     @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
     private dataSource: DataSource
   ) {}
@@ -33,15 +36,51 @@ export class UsersService {
   }
 
   async verifyEmail(signupVerifyToken: string): Promise<string> {
-    throw new Error('Method not implemented.');
+    const user = await this.userRepository.findOne({
+      where: { signupVerifyToken }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User is not exists');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email
+    })
   }
 
   async login(email: string, password: string): Promise<string> {
-    throw new Error('Method not implemented.');
+    const user = await this.userRepository.findOne({
+      where: { email, password: getSha512Hash(password) }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User is not exists');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email
+    })
   }
 
-  async getUserInfo(userId: string): Promise<UserInfo> {
-    throw new Error('Method not implemented.');
+  async getUser(id: string): Promise<UserInfo> {
+    const user = await this.userRepository.findOne({
+      where: { id }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User is not exists');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name
+    }
   }
 
   private async checkUserExists(email: string): Promise<boolean> {

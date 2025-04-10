@@ -6,10 +6,12 @@ import { EmailModule } from "src/email/email.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./entity/user.entity";
 import { LoggerMiddleware } from "src/middleware/logger.middleware";
+import { AuthModule } from "src/auth/auth.module";
 
 @Module({
   imports: [ 
     EmailModule,
+    AuthModule,
     TypeOrmModule.forFeature([ UserEntity ])
   ],
   controllers: [ UsersController ],

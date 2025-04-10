@@ -7,12 +7,13 @@ import { ConfigModule } from './config/config.module';
 import { DbModule } from './db/db.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UsersController } from './users/users.controller';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [ TestUsersModule, ConfigModule, DbModule, UsersModule ],
   controllers: [ AppController ],
   providers: [ 
-    AppService
+    AppService, AuthService
   ],
 })
 export class AppModule {}

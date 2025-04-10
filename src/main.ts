@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { AuthGuard } from './guard/auth.guard';
 
 //@nestjs/config 사용하지 않는 경우
 // dotenv.config({
@@ -21,6 +22,7 @@ async function bootstrap() {
 
   //전역으로 적용할 때
   // app.use(LoggerMiddleware);
+  // app.useGlobalGuards(new AuthGuard());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

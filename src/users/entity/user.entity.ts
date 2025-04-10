@@ -1,5 +1,5 @@
+import { getSha512Hash } from "src/crypto/crypto.util";
 import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
-import * as crypto from 'crypto'
 
 @Entity('nest_users')
 export class UserEntity {
@@ -22,9 +22,7 @@ export class UserEntity {
     @BeforeUpdate()
     hashPassword() {
         if (this.password) {
-            this.password = crypto.createHash('sha512')
-            .update(this.password)
-            .digest('hex');
+            this.password = getSha512Hash(this.password);
         }
     }
 }
